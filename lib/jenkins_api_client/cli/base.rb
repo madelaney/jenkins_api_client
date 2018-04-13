@@ -22,9 +22,12 @@
 
 require 'thor'
 require 'thor/group'
-require "#{File.dirname(__FILE__)}/node.rb"
-require "#{File.dirname(__FILE__)}/job.rb"
-require "#{File.dirname(__FILE__)}/system.rb"
+
+#require "#{File.dirname(__FILE__)}/node.rb"
+#require "#{File.dirname(__FILE__)}/job.rb"
+#require "#{File.dirname(__FILE__)}/system.rb"
+#require "#{File.dirname(__FILE__)}/plugins.rb"
+Dir["#{File.dirname(__FILE__)}/*"].each { |plugin| require plugin }
 
 module JenkinsApi
   # This is the base module for all command line interface for Jenkins API.
@@ -35,17 +38,31 @@ module JenkinsApi
     #
     class Base < Thor
 
-      class_option :username, :aliases => "-u", :desc => "Name of Jenkins user"
-      class_option :password, :aliases => "-p",
-        :desc => "Password of Jenkins user"
-      class_option :password_base64, :aliases => "-b",
-        :desc => "Base 64 encoded password of Jenkins user"
-      class_option :server_ip, :aliases => "-s",
-        :desc => "Jenkins server IP address"
-      class_option :server_port, :aliases => "-o", :desc => "Jenkins port"
-      class_option :creds_file, :aliases => "-c",
-        :desc => "Credentials file for communicating with Jenkins server"
+      class_option :username, :aliases => '-u', :desc => 'Name of Jenkins user'
 
+      class_option :password, :aliases => '-p',
+        :desc => 'Password of Jenkins user'
+
+      class_option :password_base64, :aliases => '-b',
+        :desc => 'Base 64 encoded password of Jenkins user'
+
+      class_option :server_url, :aliases => '-U', :desc => 'Jenkins URL'
+
+      class_option :server_ip, :aliases => '-s',
+        :desc => 'Jenkins server IP address'
+
+      class_option :server_port, :aliases => '-o', :desc => 'Jenkins port'
+
+      class_option :creds_file, :aliases => '-c',
+        :desc => 'Credentials file for communicating with Jenkins server'
+
+      class_option :offline, :type => :boolean, :aliases => '-O',
+        :desc => 'Install a plugin by means of uploading to Jenkins',
+        :default => false
+
+      class_option :restart, :type => :boolean, :aliases => '-r',
+        :desc => 'Restarts the Jenkins server after the operation has finished',
+        :default => false
 
       map "-v" => :version
 
@@ -77,6 +94,14 @@ module JenkinsApi
         'system',
         'system [subcommand]',
         'Provides functions to access system functions of the Jenkins CI server'
+      )
+
+      # Register the CLI::System class as "system" subcommand to CLI
+      register(
+        CLI::Plugins,
+        'plugins',
+        'plugins [subcommand]',
+        'Provides a look at the installed plugins on the Jenkins CI server'
       )
 
     end

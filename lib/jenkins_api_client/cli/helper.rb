@@ -35,7 +35,8 @@ module JenkinsApi
       # @return [JenkinsApi::Client] A new Client object
       #
       def self.setup(options)
-        if options[:username] && options[:server_ip] && \
+        if options[:username]  && \
+          (options[:server_ip] || options[:server_url]) && \
           (options[:password] || options[:password_base64])
           creds = options
         elsif options[:creds_file]

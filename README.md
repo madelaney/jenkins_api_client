@@ -193,9 +193,9 @@ end
 
 ### Configuring plugins
 
-Given the abundance of plugins for Jenkins, we now provide a extensible way to 
+Given the abundance of plugins for Jenkins, we now provide a extensible way to
 setup jobs and configure their plugins. Right now, the gem ships with the hipchat
-plugin, with more plugins to follow in the future. 
+plugin, with more plugins to follow in the future.
 
 ```ruby
 hipchat_settings = JenkinsApi::Client::PluginSettings::Hipchat.new({
@@ -221,12 +221,12 @@ job = JenkinsApi::Client::Job.new(client, hipchat)
 
 ```
 
-Writing your own plugins is also straightforward. Inherit from the 
+Writing your own plugins is also straightforward. Inherit from the
 JenkinsApi::Client::PluginSettings::Base class and override the configure method.
 Jenkins jobs are configured using xml so you just nee to figure out where in the
 configuration to hook in your plugin settings.
 
-Here is an example of a plugin written to configure a job for workspace cleanup.  
+Here is an example of a plugin written to configure a job for workspace cleanup.
 
 ```ruby
 module JenkinsApi
@@ -246,7 +246,7 @@ module JenkinsApi
         # This gives some flexibility for creating/updating simple jobs so the
         # user doesn't have to learn about handling xml.
         #
-        # @param xml_doc [Nokogiri::XML::Document] xml document to be updated with 
+        # @param xml_doc [Nokogiri::XML::Document] xml document to be updated with
         # the plugin configuration
         #
         # @return [Nokogiri::XML::Document]
@@ -267,8 +267,8 @@ module JenkinsApi
 end
 ```
 
-Currently, the skype plugin is still configured directly on the jenkins job. This will 
-likely be extracted into its own plugin in the near future, but we will maintain 
+Currently, the skype plugin is still configured directly on the jenkins job. This will
+likely be extracted into its own plugin in the near future, but we will maintain
 backwards compatibility until after an official deprecation period.
 
 ### Waiting for a build to start/Getting the build number
@@ -458,4 +458,24 @@ and consider working on it. Just open an issue in Github as a feature request.
 
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/arangamani/jenkins_api_client/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
+
+Creates an instance of the CustomTool Terraform with the current OS
+
+# Params
+----
+
+version = The version of Terraform to install. Default: 0.11.7
+arch = The current OS; See System.property['os.name'] for the default
+
+# Examples
+---
+
+## Default Invokation
+
+```def terraform = Terraform()```
+
+## Override Version
+
+``` def terraform = Terraform version: '0.11.0'```
 

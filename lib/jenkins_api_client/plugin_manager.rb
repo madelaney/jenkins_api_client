@@ -117,7 +117,7 @@ module JenkinsApi
         tree_filters = filters.empty? ? "" : ",#{filters.keys.join(",")}"
         plugins = @client.api_get_request(
           "/pluginManager",
-          "tree=plugins[shortName,version#{tree_filters}]"
+          "tree=plugins[shortName,url,version#{tree_filters}]"
         )["plugins"]
         installed = Hash[plugins.map do |plugin|
           if filters.keys.all? { |key| plugin[key.to_s] == filters[key] }
@@ -304,7 +304,7 @@ module JenkinsApi
       def list_updates
         updates = @client.api_get_request(
           "/updateCenter/coreSource",
-          "tree=updates[name,version]"
+          "tree=updates[name,version,url]"
         )["updates"]
         Hash[updates.map { |plugin| [plugin["name"], plugin["version"]] }]
       end
@@ -454,6 +454,44 @@ module JenkinsApi
         )
         response["restartRequiredForCompletion"] ||
           !list_installed(:deleted => true).empty?
+      end
+
+      # Gets the current default URL defined in the Jenkins UpdateCenter
+      #
+      # @see Client#api_get_request
+      #
+      # @return [String] URL of the current JSON target
+      #
+      def url
+        response = @client.api_get_request(
+          '/updateCenter/byId/default',
+          'tree=url')
+        response['url']
+      end
+
+      # Gets the raw JSON response from the the default Jenkins
+      # Update center.
+      #
+      # @see Client#get_installed_info for the sample data
+      # supplied by the response.
+      #
+      # @return [Array<JSON>] The JSON response from Jenkins.
+      #
+      #
+      def plugins_metadata
+        extract_json = /^updateCenter.post\((?<json>.*)\)\;/m
+        body = fetch(url).body
+        begin
+
+          m = body.match(extract_json)
+          json = JSON.parse(m[:json])
+
+        rescue JSON::ParserError => e
+          @logger.error e
+
+        end
+
+        json['plugins']
       end
     end
   end
